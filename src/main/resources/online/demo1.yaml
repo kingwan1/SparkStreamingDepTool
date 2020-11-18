@@ -1,0 +1,58 @@
+appName: demo1
+duration: 60000
+master: yarn
+params:
+  spark.serializer: org.apache.spark.serializer.KryoSerializer
+  spark.kryo.registrator: org.apache.spark.streaming.bigpipe.util.BigpipeRegistrator
+  spark.driver.cores: 2
+  spark.driver.maxResultSize: 2g
+  spark.driver.memory: 2g
+  spark.driver.memoryOverhead: 2g
+  spark.executor.memory: 2g
+  spark.yarn.executor.memoryOverhead: 2g
+  spark.executor.instances: 10
+  spark.executor.cores: 5
+  spark.default.parallelism: 50
+  spark.storage.memoryMapThreshold: 10m
+  spark.yarn.containerLauncherMaxThreads: 20
+bigPipe:
+  - streaming.bigpipe.zk.list: 127.0.0.1:3121
+    streaming.bigpipe.cluster.name: test_cluster
+    streaming.bigpipe.pipelet.name: test-pipe
+    streaming.bigpipe.pipelet.num: 1
+    streaming.bigpipe.acl.user: sf-crm-hina
+    streaming.bigpipe.acl.token: bigpipe-hina
+    streaming.bigpipe.default.start.offset: -1
+    streaming.bippipe.pipelet.start.offsets: 1:-1
+    streaming.bigpipe.message.pack.size: 2
+    streaming.bigpipe.message.handler: com.stream.bp.msghanler.SimpleMsgHandler
+calcTemplate:
+  - calcNodeID: Demo1MessageFlatMapNode
+    calcNodeClassName: com.stream.calc.impl.demo1.Demo1MessageFlatMapNode
+    preCalcNodeIDList: 
+    pipeName: test-pipe
+  - calcNodeID: Demo1LineFilterNode
+    calcNodeClassName: com.stream.calc.impl.demo1.Demo1LineFilterNode
+    preCalcNodeIDList: Demo1MessageFlatMapNode
+    pipeName: 
+  - calcNodeID: Demo1AnalysisBeanNode
+    calcNodeClassName: com.stream.calc.impl.demo1.Demo1AnalysisBeanNode
+    preCalcNodeIDList: Demo1LineFilterNode
+    pipeName: 
+    postPartition: 50
+  - calcNodeID: Demo1DuplicateNode
+    calcNodeClassName: com.stream.calc.impl.demo1.Demo1DuplicateNode
+    preCalcNodeIDList: Demo1AnalysisBeanNode
+    pipeName: 
+  - calcNodeID: Demo1MapNode
+    calcNodeClassName: com.stream.calc.impl.demo1.Demo1MapNode
+    preCalcNodeIDList: Demo1DuplicateNode
+    pipeName: 
+  - calcNodeID: Demo1ReduceNode
+    calcNodeClassName: com.stream.calc.impl.demo1.Demo1ReduceNode
+    preCalcNodeIDList: Demo1MapNode
+    pipeName: 
+  - calcNodeID: Demo1MapOutPutNode
+    calcNodeClassName: com.stream.calc.impl.demo1.Demo1MapOutPutNode
+    preCalcNodeIDList: Demo1ReduceNode
+    pipeName: 

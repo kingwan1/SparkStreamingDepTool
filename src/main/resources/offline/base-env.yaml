@@ -1,0 +1,13 @@
+zookeeper:
+    streaming.zk.hosts: 127.0.0.1:2181
+    streaming.zk.timeOut: 15000
+table:
+    streaming.table.ip: 127.0.0.1
+    streaming.table.port: 9111
+    streaming.table.getallslice: true
+    streaming.table.consistent: true
+    streaming.table.operation.timeout.ms: 200000
+    streaming.table.rpc.timeout.ms: 20000
+    streaming.table.open.table.timeout.ms: 200000
+    streaming.table.max.open.table.sleep.time: 5
+    streaming.table.tablename: test/table1
